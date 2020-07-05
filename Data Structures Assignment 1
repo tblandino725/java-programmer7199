@@ -1,4 +1,5 @@
 //for A001
+//Completed Spring 2020 
 public class Date 
 {
   protected int year;
