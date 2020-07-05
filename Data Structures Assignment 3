@@ -1,0 +1,373 @@
+
+public class BinarySearchTree<T extends Comparable<T>>
+			implements BSTInterface<T>{
+	
+	protected BSTNode<T> root; //reference to the root of this BST
+	boolean found; //used by remove
+	
+	//Queues used for traversals
+	protected LinkedQueue<T> inOrderQueue;
+	protected LinkedQueue<T> preOrderQueue;
+	protected LinkedQueue<T> postOrderQueue;
+	
+	//constructor, creates an empty BST object
+	public BinarySearchTree() {
+		root = null;
+	}
+	
+	//instead of size, we simply check if the root is null
+	@Override
+	public boolean isEmpty() {
+		return (root == null);
+	}
+	
+	@Override
+	public int size() {
+		return recSize(root);
+	}
+	
+	//helper recursive method to count the number of nodes in the tree
+	private int recSize(BSTNode<T> tree) {
+		if(tree == null)
+			return 0;
+		else
+			return recSize(tree.getLeft()) + recSize(tree.getRight()) + 1; //+1 for the root node
+	}
+	
+	/*
+	 * recContains(element, tree)
+	 * Definition:Searches for an item in tree with the same key as element’s key. 
+	 * If found, return true; otherwise, return false
+	 * Size:Number of nodes in tree (or number of nodes in the path)
+	 * Base cases:
+	 * (1) If element’s key matches key in tree.get-Info( ), return true
+	 * (2) If tree = null, return false
+	 * General case:
+	 * If element’s key is less than key in tree.getInfo( ),
+	 * return recContains(element, tree.getLeft( ));
+	 * otherwise, return recContains(element, tree.getRight( ))
+	 * */
+	@Override
+	public boolean contains(T element) {
+		return recContains(element, root);
+	}
+	
+	private boolean recContains(T element, BSTNode<T> tree) {
+		if(tree == null)
+			return false; //not found because tree does not exist
+		else if (element.compareTo(tree.getInfo()) < 0)
+			return recContains(element, tree.getLeft());//smaller, go to the left subtree
+		else if (element.compareTo(tree.getInfo()) > 0)
+			return recContains(element, tree.getRight());//larger, go to the right subtree
+		else if (element.compareTo(tree.getInfo()) == 0) //is this redundant?
+			return true; //element == info, found.
+		else
+			return false; //not found
+	}
+	
+	//inserts the new element to the correct position 
+	@Override
+	public void add(T element) {
+		root = recAdd(element, root);
+		
+	}
+	
+	/* recAdd(element, tree)
+	 * Definition:
+	 * Inserts element into the binary search tree
+	 * Size:
+	 * The number of elements in the path from root to insertion place
+	 * Base case:
+	 * If tree is null, allocate a new leaf to contain element
+	 * General cases:
+	 * (1) If element <= tree.getInfo(), then recAdd(element, tree.getLeft())
+	 * (2) If element > tree.getInfo(), then recAdd(element, tree.getRight())
+	 */
+	private BSTNode<T> recAdd(T element, BSTNode<T> node){
+		if(node == null)
+			node = new BSTNode<T>(element);//tree empty, create it using the new item
+		else if (element.compareTo(node.getInfo()) <= 0)
+			node.setLeft(recAdd(element, node.getLeft()));//smaller or equal to, add to the left
+		else
+			node.setRight(recAdd(element, node.getRight()));//larger, add to the right
+		
+		return node; //done, tree is assigned to root
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// Two created methods 
+	
+	
+	/* public T min() 
+	 * Definition:
+	 * Takes the element from the binary search tree.
+	 * Since smaller numbers are on the left side of the subtree, we need to put the node = get.left()
+	 * This then returns the minimal node information from the left subtree 
+	 * 
+	 */
+	
+	//Created Methods 
+	public T min() {
+
+		BSTNode<T> node = root;
+
+		   while(node.getLeft() != null)
+
+		   node = node.getLeft();
+
+		   return node.getInfo();
+
+		   }
+
+	
+	
+	
+	
+	/* public T max() 
+	 * Definition:
+	 * Takes the element from the binary search tree.
+	 * Since larger numbers are on the right side of the subtree, we need to put the node = get.right()
+	 * This then returns the maximum node information from the right subtree
+	 * 
+	 */
+	
+	
+	
+	
+		   public T max() {
+
+		BSTNode<T> node = root;
+
+		   while(node.getRight() != null)
+
+		   node = node.getRight();
+
+		     return node.getInfo();
+
+		   }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*
+	 * 1. removing a leaf (no children): set parent link to null
+	 * 2. removing a node with only one child: set parent link to the child
+	 * 3. removing a node with two children: don't really remove, just replace it's info with 
+	 * another node, then remove that node (becomes recursive removal)
+	 * which info (node) to replace? logical predecessor of the element we're trying to remove
+	 * */
+	@Override
+	public boolean removeNode(T element) {
+		root = recRemove(element, root);
+		return found; //will be set in recRemove
+	}
+	
+	private BSTNode<T> recRemove(T element, BSTNode<T> node){
+		if(node == null)
+			found = false; //tree is empty
+		else if (element.compareTo(node.getInfo()) < 0)
+			node.setLeft(recRemove(element, node.getLeft()));
+		else if (element.compareTo(node.getInfo()) > 0)
+			node.setRight(recRemove(element, node.getRight()));
+		else {
+			node = removeNode(node); //we are at the node that we're trying to remove
+			//and it has two children, case 3 above
+		}
+		return node;
+	}
+	
+	private BSTNode<T> removeNode(BSTNode<T> node) {
+		//finds the predecessor to replace, case 3 above
+		BSTNode<T> data = null;
+		if(node.getLeft() == null)
+			return node.getRight();
+		else if(node.getRight() == null)
+			return node.getLeft();
+		else {
+			data.setInfo(getPredecessor(node.getLeft()));
+			node.setInfo(data.getInfo());
+			node.setLeft(recRemove(data.getInfo(), node.getLeft()));
+			return node;
+		}
+	}
+	
+	private T getPredecessor(BSTNode<T> node) {
+		while(node.getRight() != null)
+			node = node.getRight();
+		
+		return node.getInfo(); 
+	}
+
+
+
+	/*
+	 * initializes current position for an iteration through this BST
+	 * in orderType order. Returns current number of nodes in the BST.
+	 * */
+	@Override
+	public int reset(int orderType) {
+		int numNodes = size();
+		switch(orderType) {
+			case INORDER:
+				inOrderQueue = new LinkedQueue<T>();
+				inOrder(root);
+				break;
+			case PREORDER:
+				preOrderQueue = new LinkedQueue<T>();
+				preOrder(root);
+				break;
+			case POSTORDER:
+				postOrderQueue = new LinkedQueue<T>();
+				postOrder(root);
+				break;	
+		}
+		return numNodes;
+	}
+
+	/*
+	 * Traverse the left subtree in order
+	 * Then enqueue tree.getInfo()
+	 * Then traverse the right subtree in order
+	 * */
+	private void inOrder(BSTNode<T> node) {
+		if(node != null) {
+			inOrder(node.getLeft());
+			inOrderQueue.enqueue(node.getInfo());
+			inOrder(node.getRight());
+		}
+	}
+	
+	private void preOrder(BSTNode<T> node) {
+		if(node != null) {
+			preOrderQueue.enqueue(node.getInfo());
+			preOrder(node.getLeft());
+			preOrder(node.getRight());
+		}
+	}
+
+	private void postOrder(BSTNode<T> node) {
+		if(node != null) {
+			postOrder(node.getLeft());
+			postOrder(node.getRight());
+			postOrderQueue.enqueue(node.getInfo());
+		}
+	}
+	
+	@Override
+	public T getNext(int orderType) {
+		switch(orderType) {
+			case INORDER:
+				return inOrderQueue.dequeue();
+			case PREORDER:
+				return preOrderQueue.dequeue();
+			case POSTORDER:
+				return postOrderQueue.dequeue();
+			default:
+				return null;
+		}
+	}
+	
+	public void balance() {
+		int count = reset(INORDER);
+		@SuppressWarnings("unchecked")
+		T [] array = (T[]) new Comparable[count];;
+		
+		//fill the array using inOrder
+		for(int index=0; index < count; index++)
+			array[index] = getNext(INORDER);
+		
+		for(T element: array )
+			System.out.print(element);
+		
+		//now everything is saved into an array inOrder
+		//empty the BST and insert new items
+		root = null;
+		insertTree(0, count-1, array);
+		
+	}
+	
+	private void insertTree(int low, int high, T[] array) {
+		int mid;
+		
+		if (low == high)
+			add(array[low]);
+		else if ((low + 1) == high) {
+			add(array[low]);
+			add(array[high]);
+		}else {
+			mid = (low + high)/2;
+			add(array[mid]);
+			insertTree(low, mid-1, array);
+			insertTree(mid+1, high, array);
+		}
+	}
+
+	public String toString() {
+		String result ="";
+		System.out.println("InOrder");
+		reset(1);
+		for(int i=0; i<size(); i++) {
+			result += getNext(1) + ", ";
+		}
+		result += '\n';
+		System.out.println("PreOrder");
+		reset(2);
+		for(int i=0; i<size(); i++) {
+			result += getNext(2) + ", ";
+		}
+		result += '\n';
+		
+		System.out.println("PostOrder");
+		reset(3);
+		for(int i=0; i<size(); i++) {
+			result += getNext(3) + ", ";
+		}
+
+		
+		return result;	
+	}
+	
+}
