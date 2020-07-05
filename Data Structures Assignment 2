@@ -1,0 +1,42 @@
+import java.util.*;
+public class MyStackDriver { 
+    public static void main(String[] args)  throws MyStackEmptyException
+    { 
+        //Generic Demo
+        Stack<String> stackGeneric = new Stack<String>(); 
+        // Stacking strings 
+        stackGeneric.push("This"); 
+        stackGeneric.push("Was"); 
+        stackGeneric.push("A"); 
+        stackGeneric.push("Fun"); 
+        stackGeneric.push("Hw"); 
+        
+        
+        System.out.print("Generic Output: ");
+        System.out.print(stackGeneric.pop()+" ");
+        System.out.print(stackGeneric.pop()+" ");
+        System.out.print(stackGeneric.pop()+" ");
+        System.out.print(stackGeneric.pop()+" ");
+        System.out.print(stackGeneric.pop()+" ");
+
+        while(!stackGeneric.isEmpty()) {
+        	try {
+        		System.out.println(stackGeneric.pop());
+        		
+        	}catch (MyStackEmptyException e) {
+ 
+        		System.err.println(e.getMessage());
+        	}
+        }
+        //Polymorphic Demo
+        
+        MyStackPolymorphic stackPoly = new MyStackPolymorphic(5);
+        for(int i=0;i<5;i++)
+        	stackPoly.push(i);
+        System.out.println("\n");
+        System.out.println("Polymorphic Output: ");
+        for(int i=0;i<5;i++)
+        	System.out.println(stackPoly.pop());
+        
+    } //Closes main method 
+} //Close Class
